@@ -1,5 +1,4 @@
 *.o
-*.pdf
 *.log
 *.aux
-
+MINIX_Documentation
