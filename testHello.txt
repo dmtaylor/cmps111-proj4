@@ -1,0 +1,8 @@
+#include <lib.h>
+#include <unistd.h>
+ 
+int main (void)
+{
+  message m;
+  _syscall(VFS_PROC_NR, 0, &m);
+}
