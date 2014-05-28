@@ -626,3 +626,14 @@ PUBLIC void ds_event()
 	dmap_endpt_up(owner_endpoint);
 }
 
+/*CHANGE BEGIN*/
+/*===========================================================================*
+ *				 say_hello				     *
+ *===========================================================================*/
+PUBLIC int say_hello()
+{
+  printf("HELLO!!!\n");
+  return(OK);
+}
+
+/*CHANGE END*/
