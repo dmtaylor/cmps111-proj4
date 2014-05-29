@@ -2,3 +2,4 @@
 *.log
 *.aux
 MINIX_Documentation
+*.tgz
