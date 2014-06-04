@@ -15,9 +15,7 @@
 
 
 PUBLIC _PROTOTYPE (int (*call_vec[]), (void) ) = {
-/*BEGIN CHANGE*/
-	say_hello,	/*  0 = unused	*/
-/*END CHANGE*/
+	do_metaread,	/*  0 = meta	*/
 	no_sys,		/*  1 = (exit)	*/
 	no_sys,		/*  2 = (fork)	*/
 	do_read,	/*  3 = read	*/

@@ -105,9 +105,6 @@ _PROTOTYPE( int do_svrctl, (void)					);
 _PROTOTYPE( int do_getsysinfo, (void)					);
 _PROTOTYPE( int pm_dumpcore, (int proc_e, struct mem_map *seg_ptr)	);
 _PROTOTYPE( void ds_event, (void)					);
-/* CHANGE BEGIN */
-_PROTOTYPE(  int say_hello, (void) );
-/*CHANGE END*/
 
 /* mount.c */
 _PROTOTYPE( int do_fslogin, (void)                                      );
@@ -177,6 +174,10 @@ _PROTOTYPE( int do_getdents, (void)					);
 _PROTOTYPE( int read_write, (int rw_flag)				);
 _PROTOTYPE( int rw_pipe, (int rw_flag, endpoint_t usr,
 		int fd_nr, struct filp *f, char *buf, size_t req_size)	);
+/* BEGIN CHANGES */
+_PROTOTYPE( int do_metaread, (void)						
+);
+/* END CHANGES */
 
 /* request.c */
 _PROTOTYPE( int req_breadwrite, (endpoint_t fs_e, endpoint_t user_e,
