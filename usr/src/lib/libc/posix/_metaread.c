@@ -6,7 +6,7 @@ PUBLIC int metaread(void)
 {
     message m;
 
-	printf("POSIX: debug: metaread has been called.\n");
+	printf("POSIX: debug: metaread() has been called.\n");
 
     return(_syscall(VFS_PROC_NR, 0, &m));
 }

@@ -39,7 +39,7 @@ PUBLIC int do_read()
  *===========================================================================*/
 PUBLIC int do_metaread()
 {
-  printf("VFS: debug: do_metaread has been called.\n");
+  printf("VFS: debug: do_metaread() has been called.\n");
 
   return(0);
 }
