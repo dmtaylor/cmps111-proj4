@@ -82,7 +82,7 @@ _PROTOTYPE( int forbidden, (struct inode *rip, mode_t access_desired)	);
 _PROTOTYPE( int read_only, (struct inode *ip)				);
 
 /* read.c */
-_PROTOTYPE( void fs_metaread, (void)					);
+_PROTOTYPE( int fs_metaread, (void)					);
 _PROTOTYPE( int fs_breadwrite, (void)					);
 _PROTOTYPE( int fs_readwrite, (void)					);
 _PROTOTYPE( void read_ahead, (void)					);

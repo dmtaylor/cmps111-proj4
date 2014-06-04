@@ -41,7 +41,7 @@ PUBLIC _PROTOTYPE( int (*call_vec[]), (void) ) = {
 	no_sys,		/* 30 rdlink		*/
 	do_getdents,	/* 31 getdents		*/
 	do_statvfs,	/* 32 statvfs		*/
-	no_sys,
+	no_sys,	/* 33 metaread */
 };
 
 /* This should not fail with "array size is negative": */

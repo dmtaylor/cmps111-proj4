@@ -15,7 +15,7 @@
 
 
 PUBLIC _PROTOTYPE (int (*call_vec[]), (void) ) = {
-	do_metaread,	/*  0 = meta	*/
+	no_sys,		/*  0 = unused	*/
 	no_sys,		/*  1 = (exit)	*/
 	no_sys,		/*  2 = (fork)	*/
 	do_read,	/*  3 = read	*/
@@ -84,7 +84,7 @@ PUBLIC _PROTOTYPE (int (*call_vec[]), (void) ) = {
 	no_sys, 	/* 66 = unused  */
 	no_sys,		/* 67 = unused	*/
 	no_sys,		/* 68 = unused	*/
-	no_sys,		/* 69 = unused  */
+	do_metaread,/* 69 = meta  */
 	no_sys,		/* 70 = unused  */
 	no_sys,		/* 71 = (sigaction) */
 	no_sys,		/* 72 = (sigsuspend) */

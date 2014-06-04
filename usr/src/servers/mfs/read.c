@@ -26,9 +26,13 @@ PRIVATE struct inode *rdahed_inode;      /* pointer to inode to read ahead */
 /*===========================================================================*
  *				fs_metaread				     *
  *===========================================================================*/
-PUBLIC void fs_metaread()
+PUBLIC int fs_metaread(void)
 {
 	printf("MFS: debug: fs_metaread() has been called.\n");
+
+	/* Copy code from fs_readwrite()? */
+
+	return(0);
 }
 
 /*===========================================================================*

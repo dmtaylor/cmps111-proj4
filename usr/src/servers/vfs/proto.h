@@ -170,14 +170,13 @@ _PROTOTYPE( int read_only, (struct vnode *vp)				);
 
 /* read.c */
 _PROTOTYPE( int do_read, (void)						);
+/* BEGIN CHANGES */
+_PROTOTYPE( int do_metaread, (void)						);
+/* END CHANGES */
 _PROTOTYPE( int do_getdents, (void)					);
 _PROTOTYPE( int read_write, (int rw_flag)				);
 _PROTOTYPE( int rw_pipe, (int rw_flag, endpoint_t usr,
 		int fd_nr, struct filp *f, char *buf, size_t req_size)	);
-/* BEGIN CHANGES */
-_PROTOTYPE( int do_metaread, (void)						
-);
-/* END CHANGES */
 
 /* request.c */
 _PROTOTYPE( int req_breadwrite, (endpoint_t fs_e, endpoint_t user_e,

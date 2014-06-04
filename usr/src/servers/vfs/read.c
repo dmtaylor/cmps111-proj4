@@ -35,13 +35,40 @@ PUBLIC int do_read()
 
 
 /*===========================================================================*
- *				do_meta					     *
+ *				do_metaread					     *
  *===========================================================================*/
 PUBLIC int do_metaread()
 {
-  printf("VFS: debug: do_metaread() has been called.\n");
+	register struct filp *f;
+	register struct vnode *vp;
+	unsigned int cum_io, cum_io_incr;
+	int r;
+	int rw_flag = READING;
 
-  return(0);
+	printf("VFS: debug: do_metaread() has been called.\n");
+
+	/* If the file descriptor is valid, get the vnode, size and mode. */
+	if (m_in.nbytes < 0) return(EINVAL);
+	if ((f = get_filp(m_in.fd)) == NULL) return(err_code);
+	if (((f->filp_mode) & (rw_flag == READING ? R_BIT : W_BIT)) == 0) {
+		return(f->filp_mode == FILP_CLOSED ? EIO : EBADF);
+	}
+	if (m_in.nbytes == 0) return(0);
+
+	vp = f->filp_vno;
+	r = OK;
+	cum_io = 0;
+
+	/* Issue request */
+	r = req_metaread(vp->v_fs_e, vp->v_inode_nr, rw_flag, who_e,
+			  m_in.buffer, m_in.nbytes, &cum_io_incr);
+
+	if (r >= 0) {
+		cum_io += cum_io_incr;
+	}
+
+	if (r == OK) return(cum_io);
+	return(r);
 }
 
 
