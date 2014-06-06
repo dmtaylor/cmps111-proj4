@@ -21,19 +21,6 @@ FORWARD _PROTOTYPE( int empty_indir, (struct buf *, struct super_block *) );
 
 
 /*===========================================================================*
- *				fs_metawrite				     *
- *===========================================================================*/
-PUBLIC int fs_metawrite(void)
-{
-	printf("MFS: debug: fs_metawrite() has been called.\n");
-
-	/* Copy code from fs_readwrite()? */
-
-	return(0);
-}
-
-
-/*===========================================================================*
  *				write_map				     *
  *===========================================================================*/
 PUBLIC int write_map(rip, position, new_zone, op)

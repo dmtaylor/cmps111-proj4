@@ -17,17 +17,153 @@ FORWARD _PROTOTYPE( int rw_chunk, (struct inode *rip, u64_t position,
 	unsigned off, size_t chunk, unsigned left, int rw_flag,
 	cp_grant_id_t gid, unsigned buf_off, unsigned int block_size,
 	int *completed)							);
-
-    /* CHANGE BEGIN */
+/* CHANGE BEGIN */
 FORWARD _PROTOTYPE( int rw_block, (struct inode *rip, block_t b,
 	unsigned off, size_t chunk, unsigned left, int rw_flag,
 	cp_grant_id_t gid, unsigned buf_off, unsigned int block_size,
 	int *completed)		);
-    /* CHANGE END */
+/* CHANGE END */
 PRIVATE char getdents_buf[GETDENTS_BUFSIZ];
 
 PRIVATE off_t rdahedpos;         /* position to read ahead */
 PRIVATE struct inode *rdahed_inode;      /* pointer to inode to read ahead */
+
+
+/*===========================================================================*
+ *				fs_metaread				     *
+ *===========================================================================*/
+PUBLIC int fs_metaread(void)
+{
+  int r, block_spec;
+  int regular;
+  cp_grant_id_t gid;
+  off_t f_size, bytes_left;
+  unsigned int off, cum_io, block_size, chunk;
+  mode_t mode_word;
+  int completed;
+  struct inode *rip;
+  size_t nrbytes;
+
+  r = OK;
+
+  printf("MFS: debug: fs_metaread() has been called.\n");
+
+  /* Find the inode referred */
+  if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
+	return(EINVAL);
+
+  mode_word = rip->i_mode & I_TYPE;
+  regular = (mode_word == I_REGULAR || mode_word == I_NAMED_PIPE);
+  block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0);
+
+  /* Determine blocksize */
+  if (block_spec) {
+	/* warn and exit? */
+  } else {
+  	block_size = rip->i_sp->s_block_size;
+  	f_size = 1024;
+  }
+
+  /* Get the values from the request message */ 
+  gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
+  nrbytes = (size_t) fs_m_in.REQ_NBYTES;
+	
+  rdwt_err = OK;		/* set to EIO if disk error occurs */
+  cum_io = 0;
+
+  /* Read 'chunk' bytes. */
+  r = rw_block(rip, rip->i_zone[9], 0, nrbytes,
+		   nrbytes, READING, gid, cum_io, block_size, &completed);
+
+  /*
+  if (r != OK) break; EOF reached 
+  if (rdwt_err < 0) break;
+
+  if (rdwt_err != OK) r = rdwt_err;
+  if (rdwt_err == END_OF_FILE) r = OK;
+  */
+
+  if (r == OK) {
+	  rip->i_update |= ATIME;
+	  rip->i_dirt = DIRTY;		/* inode is thus now dirty */
+      fs_m_out.RES_NBYTES = nrbytes;
+  } else {
+      fs_m_out.RES_NBYTES = 0;
+  }
+  
+  return(r);
+}
+
+
+/*===========================================================================*
+ *				fs_metawrite				     *
+ *===========================================================================*/
+PUBLIC int fs_metawrite(void)
+{
+  int r, block_spec;
+  int regular;
+  cp_grant_id_t gid;
+  off_t f_size, bytes_left;
+  unsigned int off, cum_io, block_size, chunk;
+  mode_t mode_word;
+  int completed;
+  struct inode *rip;
+  size_t nrbytes;
+
+  r = OK;
+
+  printf("MFS: debug: fs_metawrite() has been called.\n");
+
+  /* Find the inode referred */
+  if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
+	return(EINVAL);
+
+  mode_word = rip->i_mode & I_TYPE;
+  regular = (mode_word == I_REGULAR || mode_word == I_NAMED_PIPE);
+  block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0);
+
+  /* Determine blocksize */
+  if (block_spec) {
+	/* warn and exit? */
+  } else {
+  	block_size = rip->i_sp->s_block_size;
+  	f_size = 1024;
+  }
+
+  /* Get the values from the request message */ 
+  gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
+  nrbytes = (size_t) fs_m_in.REQ_NBYTES;
+	
+  rdwt_err = OK;		/* set to EIO if disk error occurs */
+  cum_io = 0;
+
+  /* Clear zone?? */
+  /* clear_zone(rip, f_size, 0); */
+
+  /* Read 'chunk' bytes. */
+  r = rw_block(rip, rip->i_zone[9], 0, nrbytes,
+		   nrbytes, WRITING, gid, cum_io, block_size, &completed);
+
+  /*
+  if (r != OK) break; EOF reached 
+  if (rdwt_err < 0) break;
+
+  if (rdwt_err != OK) r = rdwt_err;
+  if (rdwt_err == END_OF_FILE) r = OK;
+  */
+
+  if (r == OK) {
+	  rip->i_update |= ATIME;
+	  rip->i_dirt = DIRTY;		/* inode is thus now dirty */
+      fs_m_out.RES_NBYTES = nrbytes;
+  } else {
+      fs_m_out.RES_NBYTES = 0;
+  }
+  
+  return(r);
+}
+
+
 
 /*===========================================================================*
  *				rw_block	- reads or write block			     *
@@ -59,16 +195,32 @@ int *completed;			/* number of bytes copied */
   pos_zero.lo = 0;
   pos_zero.hi = 0;
 
+  printf("MFS: debug: rw_block() has been called.\n");
+
+  if(rip->i_mode & I_SET_STCKY_BIT != 0 && rip->i_zone[9] == 0) {
+    printf("MFS: rw_block: Cannot call on directory.\n");
+    return(-1);
+  }
+
+  if(rip->i_mode & I_SET_STCKY_BIT == 0 && rip->i_zone[9] != 0) {
+    printf("MFS: rw_block: Cannot call on a file this large.\n");
+    return(-1);
+  }
+
   if(b == NO_BLOCK) {
 	/* Reading from a nonexistent block.  Must read as all zeros.*/
 	bp = get_block(NO_DEV, NO_BLOCK, NORMAL);    /* get a buffer */
 	zero_block(bp);
+	/* set sticky bit and block num */
+	rip->i_mode = rip->i_mode | I_SET_STCKY_BIT;
+	rip->i_zone[9] = bp->b_blocknr;
   }
 
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
 
   if (block_spec) {
-	/* report a warning  and exit */
+	printf("MFS: rw_block: Cannot call on special block files.\n");
+	return(-1);
   } else {
 	/* get device number from inode */
 	dev = rip->i_dev;
@@ -112,99 +264,6 @@ int *completed;			/* number of bytes copied */
   n = (off + chunk == block_size ? FULL_DATA_BLOCK : PARTIAL_DATA_BLOCK);
   put_block(bp, n);
 
-  return(r);
-}
-
-
-/*===========================================================================*
- *				fs_metaread				     *
- *===========================================================================*/
-PUBLIC int fs_metaread(void)
-{
-
-
-	/* all code from fs_readwrite that doesn't pertain to writing, blocks*/
-  int r, block_spec;
-  int regular;
-  cp_grant_id_t gid;
-  off_t position, f_size, bytes_left;
-  unsigned int off, cum_io, block_size, chunk;
-  mode_t mode_word;
-  int completed;
-  struct inode *rip;
-  size_t nrbytes;
-  	printf("MFS: debug: fs_metaread() has been called.\n");
-  r = OK;
-  
-  /* Find the inode referred */
-  if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
-	return(EINVAL);
-
-  mode_word = rip->i_mode & I_TYPE;
-  regular = (mode_word == I_REGULAR || mode_word == I_NAMED_PIPE);
-  block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0);
-  
-  block_size = rip->i_sp->s_block_size;
-  f_size = rip->i_size;
-
-
-  /* Get the values from the request message */ 
-  gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
-  position = (off_t) fs_m_in.REQ_SEEK_POS_LO;
-  nrbytes = (size_t) fs_m_in.REQ_NBYTES;
-  
-  rdwt_err = OK;		/* set to EIO if disk error occurs */
-
-	      
-  cum_io = 0;
-  /* Split the transfer into chunks that don't span two blocks. */
-  while (nrbytes > 0) {
-	  off = ((unsigned int) position) % block_size; /* offset in blk*/
-	  chunk = min(nrbytes, block_size - off);
-
-      bytes_left = f_size - position;
-	  if (position >= f_size) break;	/* we are beyond EOF */
-	  if (chunk > (unsigned int) bytes_left) chunk = bytes_left;
-
-	  
-	  /* Read 'chunk' bytes. */
-	  r = rw_block(rip, rip->i_zone[9], off, chunk,
-	  	       nrbytes, READING, gid, cum_io, block_size, &completed);
-
-	  if (r != OK) break;	/* EOF reached */
-	  if (rdwt_err < 0) break;
-
-	  /* Update counters and pointers. */
-	  nrbytes -= chunk;	/* bytes yet to be read */
-	  cum_io += chunk;	/* bytes read so far */
-	  position += (off_t) chunk;	/* position within the file */
-  }
-
-  fs_m_out.RES_SEEK_POS_LO = position; /* It might change later and the VFS
-					   has to know this value */
-  
-
-
-  /* Check to see if read-ahead is called for, and if so, set it up. */
-  if(rip->i_seek == NO_SEEK &&
-     (unsigned int) position % block_size == 0 &&
-     (regular || mode_word == I_DIRECTORY)) {
-	  rdahed_inode = rip;
-	  rdahedpos = position;
-  } 
-
-  rip->i_seek = NO_SEEK;
-
-  if (rdwt_err != OK) r = rdwt_err;	/* check for disk error */
-  if (rdwt_err == END_OF_FILE) r = OK;
-
-  if (r == OK) {
-	  rip->i_update |= ATIME;
-	  rip->i_dirt = DIRTY;		/* inode is thus now dirty */
-  }
-  
-  fs_m_out.RES_NBYTES = cum_io;
-  
   return(r);
 }
 
