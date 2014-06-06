@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <string.h>
 
 void test(void *buffer)
 {
@@ -22,7 +23,7 @@ void test(void *buffer)
 
 int main (void)
 {
-	char buffer[101];
+	char buffer[101] = "This is some test metadata\nNew\nLine\0";
 	int fd;
 
     /*	test(&buffer); */
@@ -30,9 +31,12 @@ int main (void)
 	if (fd == -1) { 
 		printf("DEBUG: File open failed.\n");
 	}
-    metaread(fd,&buffer,100); 
 
-	printf("\n\n");
+    metawrite(fd,&buffer,100); 
 
-    metawrite(fd,&buffer,100);
+    memset(buffer,0,100);
+    printf("\n\n");
+
+    metaread(fd,&buffer,100);
+    printf("%s\n",buffer);
 }

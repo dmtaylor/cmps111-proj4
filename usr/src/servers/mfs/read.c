@@ -181,13 +181,9 @@ unsigned buf_off;		/* offset in grant */
 unsigned int block_size;	/* block size of FS operating on */
 int *completed;			/* number of bytes copied */
 {
-/* Read or write (part of) a block. */
-/* left and chunk are always the same for metadata
-   left is nrbytrs, chunk is nrbytes left in current block
-*/
   register struct buf *bp;
   register int r = OK;
-  int n, block_spec;
+  int n, block_spec, scale;
   dev_t dev;
   u64_t pos_zero;
 
@@ -197,23 +193,30 @@ int *completed;			/* number of bytes copied */
 
   printf("MFS: debug: rw_block() has been called.\n");
 
-  if(rip->i_mode & I_SET_STCKY_BIT != 0 && rip->i_zone[9] == 0) {
+  if(((rip->i_mode & I_SET_STCKY_BIT) != 0) && (rip->i_zone[9] == NO_ZONE)) {
     printf("MFS: rw_block: Cannot call on directory.\n");
     return(-1);
   }
 
-  if(rip->i_mode & I_SET_STCKY_BIT == 0 && rip->i_zone[9] != 0) {
+  if(((rip->i_mode & I_SET_STCKY_BIT) == 0) && (rip->i_zone[9] != NO_ZONE)) {
     printf("MFS: rw_block: Cannot call on a file this large.\n");
     return(-1);
   }
 
+  printf("MFS: debug: Input inode, bit = %d, b_num = %d.\n",(rip->i_mode & I_SET_STCKY_BIT),b);
+
   if(b == NO_BLOCK) {
-	/* Reading from a nonexistent block.  Must read as all zeros.*/
-	bp = get_block(NO_DEV, NO_BLOCK, NORMAL);    /* get a buffer */
-	zero_block(bp);
-	/* set sticky bit and block num */
+    /* Allocate a new block and zero it */
+    scale = rip->i_sp->s_log_zone_size;
+    rip->i_zone[9] = alloc_zone(rip->i_dev,rip->i_zone[9]); 
+    b = (block_t)rip->i_zone[9] << scale; 
+    bp = get_block(rip->i_dev,b,NORMAL); 
+    zero_block(bp); 
+
+    /* Write the new block data to the inode */
 	rip->i_mode = rip->i_mode | I_SET_STCKY_BIT;
-	rip->i_zone[9] = bp->b_blocknr;
+	rip->i_zone[9] = b;
+	printf("MFS: debug: New block, bit = %d, b_num = %d.\n",(rip->i_mode & I_SET_STCKY_BIT),b);
   }
 
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
@@ -229,15 +232,10 @@ int *completed;			/* number of bytes copied */
   if (rw_flag == READING && b != NO_BLOCK) {
 	/* Read and read ahead if convenient. */
 	bp = rahead(rip, b, pos_zero, left);
+    printf("MFS: debug: getched bp->block_n = %d.\n", bp->b_blocknr);
   } else if (b != NO_BLOCK) {
-	/* Normally an existing block to be partially overwritten is first read
-	 * in.  However, a full block need not be read in.  If it is already in
-	 * the cache, acquire it, otherwise just acquire a free buffer.
-	 */
-	n = (chunk == block_size ? NO_READ : NORMAL);
-	if (!block_spec && off == 0 && (off_t) ex64lo(pos_zero) >= rip->i_size) 
-		n = NO_READ;
-	bp = get_block(dev, b, n);
+	bp = get_block(dev, b, NORMAL);
+    printf("MFS: debug: getched bp->block_n = %d.\n", bp->b_blocknr);
   }
 
   /* In all cases, bp now points to a valid buffer. */
@@ -248,17 +246,20 @@ int *completed;			/* number of bytes copied */
   if (rw_flag == WRITING && chunk != block_size && !block_spec &&
       (off_t) ex64lo(pos_zero) >= rip->i_size && off == 0) {
 	zero_block(bp);
+    printf("MFS: debug: zeroing block\n");
   }
 
   if (rw_flag == READING) {
 	/* Copy a chunk from the block buffer to user space. */
 	r = sys_safecopyto(VFS_PROC_NR, gid, (vir_bytes) buf_off,
 			   (vir_bytes) (bp->b_data+off), (size_t) chunk, D);
+    printf("MFS: debug: reading.\n", bp->b_blocknr);
   } else {
 	/* Copy a chunk from user space to the block buffer. */
 	r = sys_safecopyfrom(VFS_PROC_NR, gid, (vir_bytes) buf_off,
 			     (vir_bytes) (bp->b_data+off), (size_t) chunk, D);
 	bp->b_dirt = DIRTY;
+	printf("MFS: debug: writing.\n", bp->b_blocknr);
   }
 
   n = (off + chunk == block_size ? FULL_DATA_BLOCK : PARTIAL_DATA_BLOCK);
@@ -561,6 +562,7 @@ off_t position;			/* position in file whose blk wanted */
   /* Is 'position' to be found in the inode itself? */
   if (zone < dzones) {
 	zind = (int) zone;	/* index should be an int */
+	if (zind == 9) return(NO_BLOCK);
 	z = rip->i_zone[zind];
 	if (z == NO_ZONE) return(NO_BLOCK);
 	b = (block_t) ((z << scale) + boff);
