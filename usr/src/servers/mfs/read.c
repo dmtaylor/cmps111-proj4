@@ -19,8 +19,8 @@ FORWARD _PROTOTYPE( int rw_chunk, (struct inode *rip, u64_t position,
 	int *completed)							);
 
     /* CHANGE BEGIN */
-FORWARD _PROTOTYPE( int r_chunk, (struct inode *rip, u64_t position,
-	unsigned off, size_t chunk, unsigned left,
+FORWARD _PROTOTYPE( int rw_block, (struct inode *rip, block_t b,
+	unsigned off, size_t chunk, unsigned left, int rw_flag,
 	cp_grant_id_t gid, unsigned buf_off, unsigned int block_size,
 	int *completed)		);
     /* CHANGE END */
@@ -28,65 +28,87 @@ PRIVATE char getdents_buf[GETDENTS_BUFSIZ];
 
 PRIVATE off_t rdahedpos;         /* position to read ahead */
 PRIVATE struct inode *rdahed_inode;      /* pointer to inode to read ahead */
+
 /*===========================================================================*
- *				r_chunk	- reads chunk			     *
+ *				rw_block	- reads or write block			     *
  *===========================================================================*/
-PRIVATE int r_chunk(rip, position, off, chunk, left, gid,
+PRIVATE int rw_block(rip, b, off, chunk, left, rw_flag, gid,
  buf_off, block_size, completed)
 register struct inode *rip;	/* pointer to inode for file to be rd */
-u64_t position;			/* position within file to read */
+block_t b;				/* block number to exit */
 unsigned off;			/* off within the current block */
 unsigned int chunk;		/* number of bytes to read or write */
 unsigned left;			/* max number of bytes wanted after position */
+int rw_flag;			/* READING or WRITING */
 cp_grant_id_t gid;		/* grant */
 unsigned buf_off;		/* offset in grant */
 unsigned int block_size;	/* block size of FS operating on */
 int *completed;			/* number of bytes copied */
 {
-/* Read(part of) a block. */
-
+/* Read or write (part of) a block. */
+/* left and chunk are always the same for metadata
+   left is nrbytrs, chunk is nrbytes left in current block
+*/
   register struct buf *bp;
   register int r = OK;
   int n, block_spec;
-  block_t b;
   dev_t dev;
+  u64_t pos_zero;
 
   *completed = 0;
+  pos_zero.lo = 0;
+  pos_zero.hi = 0;
+
+  if(b == NO_BLOCK) {
+	/* Reading from a nonexistent block.  Must read as all zeros.*/
+	bp = get_block(NO_DEV, NO_BLOCK, NORMAL);    /* get a buffer */
+	zero_block(bp);
+  }
 
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
 
   if (block_spec) {
-	b = div64u(position, block_size);
-	dev = (dev_t) rip->i_zone[0];
+	/* report a warning  and exit */
   } else {
-	if (ex64hi(position) != 0)
-		panic("rw_chunk: position too high");
-	b = read_map(rip, (off_t) ex64lo(position));
+	/* get device number from inode */
 	dev = rip->i_dev;
   }
 
-  if (!block_spec && b == NO_BLOCK) {
-
-		/* Reading from a nonexistent block.  Must read as all zeros.*/
-		bp = get_block(NO_DEV, NO_BLOCK, NORMAL);    /* get a buffer */
-		zero_block(bp);
-
-  } else {
+  if (rw_flag == READING && b != NO_BLOCK) {
 	/* Read and read ahead if convenient. */
-	bp = rahead(rip, b, position, left);
+	bp = rahead(rip, b, pos_zero, left);
+  } else if (b != NO_BLOCK) {
+	/* Normally an existing block to be partially overwritten is first read
+	 * in.  However, a full block need not be read in.  If it is already in
+	 * the cache, acquire it, otherwise just acquire a free buffer.
+	 */
+	n = (chunk == block_size ? NO_READ : NORMAL);
+	if (!block_spec && off == 0 && (off_t) ex64lo(pos_zero) >= rip->i_size) 
+		n = NO_READ;
+	bp = get_block(dev, b, n);
   }
 
   /* In all cases, bp now points to a valid buffer. */
   if (bp == NULL) 
   	panic("bp not valid in rw_chunk; this can't happen");
   
+   /* remove chunk != block_size ?? */
+  if (rw_flag == WRITING && chunk != block_size && !block_spec &&
+      (off_t) ex64lo(pos_zero) >= rip->i_size && off == 0) {
+	zero_block(bp);
+  }
 
-
+  if (rw_flag == READING) {
 	/* Copy a chunk from the block buffer to user space. */
 	r = sys_safecopyto(VFS_PROC_NR, gid, (vir_bytes) buf_off,
 			   (vir_bytes) (bp->b_data+off), (size_t) chunk, D);
- 
-  
+  } else {
+	/* Copy a chunk from user space to the block buffer. */
+	r = sys_safecopyfrom(VFS_PROC_NR, gid, (vir_bytes) buf_off,
+			     (vir_bytes) (bp->b_data+off), (size_t) chunk, D);
+	bp->b_dirt = DIRTY;
+  }
+
   n = (off + chunk == block_size ? FULL_DATA_BLOCK : PARTIAL_DATA_BLOCK);
   put_block(bp, n);
 
@@ -146,8 +168,8 @@ PUBLIC int fs_metaread(void)
 
 	  
 	  /* Read 'chunk' bytes. */
-	  r = r_chunk(rip, cvul64((unsigned long) position), off, chunk,
-	  	       nrbytes, gid, cum_io, block_size, &completed);
+	  r = rw_block(rip, rip->i_zone[9], off, chunk,
+	  	       nrbytes, READING, gid, cum_io, block_size, &completed);
 
 	  if (r != OK) break;	/* EOF reached */
 	  if (rdwt_err < 0) break;
