@@ -51,6 +51,7 @@ SRCS+= 	 \
 	_lseek.c \
 	_lstat.c \
     _metaread.c\
+    _metawrite.c\
 	_mkdir.c \
 	_mkfifo.c \
 	_mknod.c \

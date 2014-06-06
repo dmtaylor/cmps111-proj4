@@ -31,9 +31,9 @@ FORWARD _PROTOTYPE(int fs_sendrec_f, (char *file, int line, endpoint_t fs_e,
 
 
 /*===========================================================================*
- *				req_metaread				     *
+ *				req_meta				     *
  *===========================================================================*/
-PUBLIC int req_metaread(fs_e, inode_nr, rw_flag, user_e,
+PUBLIC int req_meta(fs_e, inode_nr, rw_flag, user_e,
 	user_addr, num_of_bytes, cum_iop)
 endpoint_t fs_e;
 ino_t inode_nr;
@@ -47,13 +47,15 @@ unsigned int *cum_iop;
   cp_grant_id_t grant_id;
   message m;
 
+  printf("VFS: debug: req_meta() has been called.\n");
+
   grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
   			     (rw_flag==READING ? CPF_WRITE:CPF_READ));
   if (grant_id == -1)
 	  panic("req_readwrite: cpf_grant_magic failed");
 
   /* Fill in request message */
-  m.m_type = REQ_METAREAD;
+  m.m_type = rw_flag == READING ? REQ_METAREAD : REQ_METAWRITE;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
   m.REQ_NBYTES = num_of_bytes;

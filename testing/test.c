@@ -26,9 +26,13 @@ int main (void)
 	int fd;
 
     /*	test(&buffer); */
-	fd = open("testfile", O_RDONLY);
+	fd = open("testfile", O_RDWR);
 	if (fd == -1) { 
 		printf("DEBUG: File open failed.\n");
 	}
     metaread(fd,&buffer,100); 
+
+	printf("\n\n");
+
+    metawrite(fd,&buffer,100);
 }

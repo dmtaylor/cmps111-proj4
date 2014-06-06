@@ -46,5 +46,6 @@ PUBLIC _PROTOTYPE (int (*fs_call_vec[]), (void) ) = {
         fs_getdents,	    /* 31  */
         fs_statvfs,    /* 32 */
 		fs_metaread,		/* 33 */
+		fs_metawrite,		/* 34 */
 };
 

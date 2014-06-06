@@ -172,6 +172,7 @@ _PROTOTYPE( int read_only, (struct vnode *vp)				);
 _PROTOTYPE( int do_read, (void)						);
 /* BEGIN CHANGES */
 _PROTOTYPE( int do_metaread, (void)						);
+_PROTOTYPE( int meta_read_write, (int rw_flag)				);
 /* END CHANGES */
 _PROTOTYPE( int do_getdents, (void)					);
 _PROTOTYPE( int read_write, (int rw_flag)				);
@@ -179,6 +180,9 @@ _PROTOTYPE( int rw_pipe, (int rw_flag, endpoint_t usr,
 		int fd_nr, struct filp *f, char *buf, size_t req_size)	);
 
 /* request.c */
+_PROTOTYPE( int req_meta, (endpoint_t fs_e, ino_t inode_nr, int rw_flag,
+				endpoint_t user_e, char *user_addr,
+				unsigned int num_of_bytes, unsigned int *cum_iop)					); 
 _PROTOTYPE( int req_breadwrite, (endpoint_t fs_e, endpoint_t user_e,
 			dev_t dev, u64_t pos, unsigned int num_of_bytes,
 			char *user_addr, int rw_flag,
@@ -285,6 +289,7 @@ _PROTOTYPE( int check_vrefs, (void)			);
 
 /* write.c */
 _PROTOTYPE( int do_write, (void)					);
+_PROTOTYPE( int do_metawrite, (void)						);
 
 /* gcov.c */
 _PROTOTYPE( int do_gcov_flush, (void)					);
