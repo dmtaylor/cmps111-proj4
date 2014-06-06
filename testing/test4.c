@@ -34,6 +34,7 @@ int main (void)
         printf("%c", buffer[i]);
         i++;
     }
+    i = 0;
     /*clear buffer*/
     memset(&buffer[0], 0, sizeof(buffer));
 
@@ -43,7 +44,7 @@ int main (void)
         printf("%c", bufferReg[i]);
         i++;
     }
-    
+    i = 0;
 	printf("\n\n");
 
 }

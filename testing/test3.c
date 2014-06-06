@@ -28,6 +28,7 @@ int main (void)
         printf("%c", buffer[i]);
         i++;
     }
+    i = 0;
     /*clear buffer*/
     memset(&buffer[0], 0, sizeof(buffer));
     /*buffer for regular file contents*/
@@ -38,10 +39,11 @@ int main (void)
     memset(&bufferReg[0], 0, sizeof(bufferReg));
     /*confirm regular file contents written*/
     read(fd, &bufferReg, 100);
-        while(bufferReg[i] != '\0') {
+    while(bufferReg[i] != '\0') {
         printf("%c", bufferReg[i]);
         i++;
     }
+    i = 0;
     /*Check if metadata region still unchanged*/
     read(fd, &buffer, 100);
     while(buffer[i] != '\0') {
