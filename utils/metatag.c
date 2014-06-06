@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_LEN 1024
 
 int main(int argc, char** argv){
     char* buffer;
@@ -29,6 +30,10 @@ int main(int argc, char** argv){
         strcat(buffer, " ");
     }
     len = strlen(buffer);
+    if(len > MAX_LEN-1){
+        fprintf(stderr, "Input stream exceeds max length\n");
+        exit(1);
+    }
     metawrite(fd,&buffer,len);
     close(fd);
     return 0;
