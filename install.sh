@@ -19,5 +19,6 @@ cp usr/src/servers/vfs/request.c /usr/src/servers/vfs/request.c
 cp usr/src/servers/mfs/table.c /usr/src/servers/mfs/table.c
 cp usr/src/servers/mfs/proto.h /usr/src/servers/mfs/proto.h
 cp usr/src/servers/mfs/read.c /usr/src/servers/mfs/read.c
+cp usr/src/servers/mfs/write.c /usr/src/servers/mfs/write.c
 
 cp usr/src/servers/hgfs/table.c /usr/src/servers/hgfs/table.c
