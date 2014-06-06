@@ -2,7 +2,7 @@
  * By: Forrest Kerslager, Nick Noto, David Taylor, Kevin Yeap,
  *     Connie Yu
  * 
- * 
+ * 2014/06/06
  * */
 
 #include <stdio.h>
@@ -28,5 +28,6 @@ int main(int argc, char** argv){
     }
     metaread(fd, &buffer, MAX_SIZE);
     printf("%s\n", buffer);
+    close(fd);
     return 0;   
 }

@@ -2,6 +2,7 @@
  * By: Forrest Kerslager, Nick Noto, David Taylor, Kevin Yeap,
  *     Connie Yu
  * 
+ * 2014/06/06
  * */
 
 #include <stdio.h>
@@ -29,6 +30,7 @@ int main(int argc, char** argv){
     }
     len = strlen(buffer);
     metawrite(fd,&buffer,len);
+    close(fd);
     return 0;
     
 }
