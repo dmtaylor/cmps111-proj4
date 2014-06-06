@@ -4,5 +4,7 @@
 *.c text eol=lf
 *.h text eol=lf
 Makefile text elo=lf
+*.inc text elo=lf
+*.sh text elo=lf
 
 *.pdf binary
