@@ -46,8 +46,6 @@ PUBLIC int fs_metaread(void)
 
   r = OK;
 
-  printf("MFS: debug: fs_metaread() has been called.\n");
-
   /* Find the inode referred */
   if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
 	return(EINVAL);
@@ -111,8 +109,6 @@ PUBLIC int fs_metawrite(void)
   size_t nrbytes;
 
   r = OK;
-
-  printf("MFS: debug: fs_metawrite() has been called.\n");
 
   /* Find the inode referred */
   if ((rip = find_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
@@ -190,8 +186,6 @@ int *completed;			/* number of bytes copied */
   *completed = 0;
   pos_zero.lo = 0;
   pos_zero.hi = 0;
-
-  printf("MFS: debug: rw_block() has been called.\n");
 
   if(((rip->i_mode & I_SET_STCKY_BIT) != 0) && (rip->i_zone[9] == NO_ZONE)) {
     printf("MFS: rw_block: Cannot call on directory.\n");

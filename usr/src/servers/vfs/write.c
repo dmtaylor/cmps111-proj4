@@ -24,7 +24,6 @@ PUBLIC int do_write()
  *===========================================================================*/
 PUBLIC int do_metawrite()
 {
-  printf("VFS: debug: do_metawrite() has been called.\n");
   return(meta_read_write(WRITING));
 }
 

@@ -47,8 +47,6 @@ unsigned int *cum_iop;
   cp_grant_id_t grant_id;
   message m;
 
-  printf("VFS: debug: req_meta() has been called.\n");
-
   grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
   			     (rw_flag==READING ? CPF_WRITE:CPF_READ));
   if (grant_id == -1)
