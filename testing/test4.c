@@ -31,22 +31,27 @@ int main (void)
     /*clear buffer*/
     memset(&buffer[0], 0, sizeof(buffer));
     /*confirm metadata written*/
-    metaread(fd,&buffer,100); 
-    while(buffer[i] != '\0') {
+    metaread(fd,&buffer,100);
+    printf("%s\n", buffer);
+    
+    /* Not sure if the following code is necessary*/
+    /*while(buffer[i] != '\0') {
         printf("%c", buffer[i]);
         i++;
-    }
+    }*/
     i = 0;
     /*clear buffer*/
     memset(&buffer[0], 0, sizeof(buffer));
 
     /*check that regular file contents unchanged*/
     read(fd, &bufferReg, 100);
+    
+    printf("%s\n", bufferReg);
 
-    while(bufferReg[i] != '\0') {
+    /*while(bufferReg[i] != '\0') {
         printf("%c", bufferReg[i]);
         i++;
-    }
+    }*/
     i = 0;
 	printf("\n\n");
 
