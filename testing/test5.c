@@ -1,5 +1,8 @@
 /*Demonstrate that copying a file with metadata copies the metadata*/
 /*This file just reads the metadata from the new copied file "copy.txt" and prints it out */
+/*Run test2.c first to generate README.txt to be copied.*/
+/*Run test5.sh to copy README.txt*/
+/*Run this file to verify copy.txt still holds metadata*/
 #include <lib.h>
 #include <unistd.h>
 #include <fcntl.h>
