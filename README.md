@@ -10,51 +10,52 @@ By: Forrest Kerslager
 File Listing
 ------------
 
-usr/
-    src/
-        lib/
-            libc/
-                posix/
-                    Makefile.inc
-                    _metaread.c
-                    _metawrite.c
-            libvtreefs/
-                table.c
+    usr/
+        src/
+            lib/
+                libc/
+                    posix/
+                        Makefile.inc
+                        _metaread.c
+                        _metawrite.c
+                libvtreefs/
+                    table.c
+            include/
+                stdio.h
+                minix/
+                    callnr.h
+                    vfsif.h
+            servers/
+                hgfs/
+                    table.c
+                mfs/
+                    proto.h
+                    read.c
+                    table.c
+                    write.c
+                vfs/
+                    proto.h
+                    read.c
+                    request.c
+                    table.c
+                    write.c
         include/
-            stdio.h
             minix/
                 callnr.h
                 vfsif.h
-        servers/
-            hgfs/
-                table.c
-            mfs/
-                proto.h
-                read.c
-                table.c
-                write.c
-            vfs/
-                proto.h
-                read.c
-                request.c
-                table.c
-                write.c
-    include/
-        minix/
-            callnr.h
-            vfsif.h
             
-utils/
-    metacat.c
-    metatag.c
+    utils/
+        metacat.c
+        metatag.c
     
-testing/
-    test.c
-    testfile
+    testing/
+        test.c
+        testfile
 
-install.sh
-design.pdf
-README.md                    
+    install.sh
+    design.pdf
+    README.md
+
 
 Installation
 ------------
