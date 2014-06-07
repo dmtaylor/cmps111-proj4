@@ -9,6 +9,8 @@ metadata of the copied file*/
 #include <fcntl.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
 
 int main (void)
 {
@@ -16,8 +18,8 @@ int main (void)
     char bufferCOPY[101] = "\n";
 	int fd, fd2, i = 0;
 
-	fd = open("README.txt", O_RDWR & O_CREAT, S_IRWXU);
-    fd2 = open("copy.txt", O_RDWR & O_CREAT, S_IRWXU);
+	fd = open("README.txt", O_RDWR | O_CREAT, S_IRWXU);
+    fd2 = open("copy.txt", O_RDWR | O_CREAT, S_IRWXU);
 	if (fd == -1) { 
 		printf("DEBUG: File open failed.\n");
 	}

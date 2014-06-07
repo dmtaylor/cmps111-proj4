@@ -5,13 +5,16 @@ metadata.*/
 #include <fcntl.h>
 #include <sys/types.h>
 #include <stdio.h>
-
+#include <sys/stat.h>
+#include <string.h>
 
 
 int main (void)
 {
     /*buffer for metadata region contents*/
 	char buffer[101] = "Don't change\n";
+    /*buffer for regular file contents*/
+    char bufferReg[101] = "Regular file contents\n";
 	int fd, i = 0;
 
 	fd = open("testfile", O_RDWR & O_CREAT, S_IRWXU);
@@ -31,8 +34,7 @@ int main (void)
     i = 0;
     /*clear buffer*/
     memset(&buffer[0], 0, sizeof(buffer));
-    /*buffer for regular file contents*/
-    bufferReg[101] = "Regular file contents\n";
+
     /*write to regular file region*/
     write(fd, &bufferReg, 100);
     /*clear buffer*/
@@ -52,4 +54,3 @@ int main (void)
     }
     return 0;
 }
-`

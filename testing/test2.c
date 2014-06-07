@@ -6,7 +6,8 @@ reading back the note.*/
 #include <fcntl.h>
 #include <sys/types.h>
 #include <stdio.h>
-
+#include <sys/stat.h>
+#include <string.h>
 
 
 int main (void)
@@ -14,7 +15,7 @@ int main (void)
 	char buffer[101] = "This file is awesome!\n";
 	int fd, i = 0;
 
-	fd = open("README.txt", O_RDWR & O_CREAT, S_IRWXU);
+	fd = open("README.txt", O_RDWR | O_CREAT, S_IRWXU);
 	if (fd == -1) { 
 		printf("DEBUG: File open failed.\n");
 	}

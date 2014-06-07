@@ -4,7 +4,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <stdio.h>
-
+#include <sys/stat.h>
+#include <string.h>
 
 
 int main (void)
