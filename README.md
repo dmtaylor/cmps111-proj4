@@ -69,7 +69,10 @@ Run
     
 This assumes your system runs bash-2.05
 
-    cd /usr/src/
+    cd /usr/src/lib
+	make install
+	cd /usr/src/include
+	make install
     make libraries
     make includes
     cd servers/

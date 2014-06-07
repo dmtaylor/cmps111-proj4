@@ -8,11 +8,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #define MAX_LEN 1024
 
 int main(int argc, char** argv){
-    char* buffer;
+    char buffer[MAX_LEN];
     int fd, i, len;
     
     if(argc < 3){
@@ -24,16 +27,17 @@ int main(int argc, char** argv){
         fprintf(stderr, "Error, file not found\n");
         exit(1);
     }
-    buffer = "";
+
     for(i=2; i<argc; i++){
+		len = strlen(buffer) + strlen(argv[i]) + 1;
+		if(len > MAX_LEN-1){
+			fprintf(stderr, "Input stream exceeds max length\n");
+			exit(1);
+		}
         strcat(buffer, argv[i]);
         strcat(buffer, " ");
     }
-    len = strlen(buffer);
-    if(len > MAX_LEN-1){
-        fprintf(stderr, "Input stream exceeds max length\n");
-        exit(1);
-    }
+
     metawrite(fd,&buffer,len);
     close(fd);
     return 0;
