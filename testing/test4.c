@@ -10,21 +10,22 @@
 
 int main (void)
 {
-	int fd;
-
-	fd = open("testfile", O_RDWR & O_CREAT, S_IRWXU);
+	int fd, i = 0;
+    /*buffer for regular file contents*/
+    char bufferReg[101] = "Regular file contents\n";
+    /*buffer for metadata region contents*/
+	char buffer[101] = "meta meta meta\n";
+	fd = open("testfile.txt", O_RDWR | O_CREAT, S_IRWXU);
 	if (fd == -1) { 
 		printf("DEBUG: File open failed.\n");
 	}
-    /*buffer for regular file contents*/
-    bufferReg[101] = "Regular file contents\n";
+
     /*write to regular file region*/
     write(fd, &bufferReg, 100);
     /*clear buffer*/
     memset(&bufferReg[0], 0, sizeof(bufferReg));
     
-    /*buffer for metadata region contents*/
-	char buffer[101] = "meta meta meta\n";
+
     /*write metadata*/
     metawrite(fd, &buffer, 100);
     /*clear buffer*/
@@ -41,6 +42,7 @@ int main (void)
 
     /*check that regular file contents unchanged*/
     read(fd, &bufferReg, 100);
+
     while(bufferReg[i] != '\0') {
         printf("%c", bufferReg[i]);
         i++;
@@ -49,4 +51,3 @@ int main (void)
 	printf("\n\n");
 
 }
-`

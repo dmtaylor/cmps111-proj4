@@ -1,5 +1,5 @@
 /*Demonstrate that changing the regular file contents does not change the extra 
-metadata.*/
+metadata. Should print "Don't Change" if successful*/
 #include <lib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -17,7 +17,7 @@ int main (void)
     char bufferReg[101] = "Regular file contents\n";
 	int fd, i = 0;
 
-	fd = open("testfile", O_RDWR & O_CREAT, S_IRWXU);
+	fd = open("testfile.txt", O_RDWR | O_CREAT, S_IRWXU);
 	if (fd == -1) { 
 		printf("DEBUG: File open failed.\n");
 	}
