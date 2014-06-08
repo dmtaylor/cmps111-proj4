@@ -48,7 +48,7 @@ int main (void)
     /* same change */
     memset(&bufferCOPY, 0, sizeof(char)*BUF_SIZE);
     /*check metadata in copy.txt to make sure it's the same*/ 
-    metaread(fd2,&buffer,BUF_SIZE-1);
+    metaread(fd2,&bufferCOPY,BUF_SIZE-1);
     printf("%s\n", bufferCOPY);
     
     /*while(bufferCOPY[i] != '\0') {

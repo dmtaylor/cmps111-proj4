@@ -45,7 +45,7 @@ int main (void)
     }*/
     i = 0;
     /*clear buffer*/
-    memset(&buffer[0], 0, sizeof(buffer));
+    memset(&buffer, 0, sizeof(char)*BUF_SIZE);
 
     /*check that regular file contents unchanged*/
     read(fd, &bufferReg, BUF_SIZE-1);
