@@ -12,10 +12,12 @@ metadata of the copied file*/
 #include <string.h>
 #include <sys/stat.h>
 
+#define BUF_SIZE 101
+
 int main (void)
 {
-	char buffer[101] = "NEW STUFF IN ORIGINAL\n";
-    char bufferCOPY[101] = "\n";
+	char buffer[BUF_SIZE] = "NEW STUFF IN ORIGINAL\n";
+    char bufferCOPY[BUF_SIZE] = "\n";
 	int fd, fd2, i = 0;
 
 	fd = open("README.txt", O_RDWR | O_CREAT, S_IRWXU);
@@ -28,21 +30,30 @@ int main (void)
 	}
     
     /*Write "NEW STUFF IN ORIGINAL" to metadata region of original README.txt*/
-    metawrite(fd, &buffer, 100);
+    metawrite(fd, &buffer, BUF_SIZE-1);
     /*Clear buffer*/
-    memset(&buffer[0], 0, sizeof(buffer));
+    /* Same changes as in 4 & 5 */
+    memset(&buffer, 0, sizeof(char)*BUF_SIZE);
     /*Read back data from metadata region of README.txt*/
-    metaread(fd,&buffer,100); 
+    metaread(fd,&buffer,BUF_SIZE-1); 
+    
+    printf("%s\n", buffer);
+    /*
     while(buffer[i] != '\0') {
         printf("%c", buffer[i]);
         i++;
     }
-    memset(&bufferCOPY[0], 0, sizeof(buffer));
+    */
+    
+    /* same change */
+    memset(&bufferCOPY, 0, sizeof(char)*BUF_SIZE);
     /*check metadata in copy.txt to make sure it's the same*/ 
-    metaread(fd2,&buffer,100); 
-    while(bufferCOPY[i] != '\0') {
+    metaread(fd2,&bufferCOPY,BUF_SIZE-1);
+    printf("%s\n", bufferCOPY);
+    
+    /*while(bufferCOPY[i] != '\0') {
         printf("%c", bufferCOPY[i]);
         i++;
-    }
+    }*/
     return 0;
 }

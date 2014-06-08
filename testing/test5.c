@@ -11,10 +11,12 @@
 #include <sys/stat.h>
 #include <string.h>
 
+#define BUF_SIZE 101
+
 
 int main (void)
 {
-	char buffer[101] = "\n";
+	char buffer[BUF_SIZE] = "\n";
 	int fd, i = 0;
 
 	fd = open("copy.txt", O_RDWR & O_CREAT, S_IRWXU);
@@ -23,15 +25,20 @@ int main (void)
 	}
 
     /*Clear buffer*/
-    memset(&buffer[0], 0, sizeof(buffer));
+    /* Changed mem arithmetic. buffer is a pointer d.t.*/
+    memset(&buffer, 0, sizeof(char)* BUF_SIZE);
     /*Read back data from metadata region*/
-    metaread(fd,&buffer,100); 
+    metaread(fd,&buffer, BUF_SIZE-1);
+    
+    /* This should be equivalent d.t.*/
+    printf("%s\n", buffer);
+    /*
     while(buffer[i] != '\0') {
         printf("%c", buffer[i]);
         i++;
     }
     i = 0;
-    
+    */
     
     return 0;
 }
