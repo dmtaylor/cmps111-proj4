@@ -15,7 +15,7 @@ int main (void)
 {
 	char buffer[101] = "lulz\n";
 	int fd, i = 0;
-    char filename[1023];
+    char filename[1010];
     for (i = 1; i < 1001; i++) {
         sprintf(filename, "%d", i);
         fd = open(filename, O_RDWR | O_CREAT, S_IRWXU);
