@@ -188,16 +188,14 @@ int *completed;			/* number of bytes copied */
   pos_zero.hi = 0;
 
   if(((rip->i_mode & I_SET_STCKY_BIT) != 0) && (rip->i_zone[9] == NO_ZONE)) {
-    printf("MFS: rw_block: Cannot call on directory.\n");
+    fprintf(stderr,"MFS: rw_block: Cannot call on directory.\n");
     return(-1);
   }
 
   if(((rip->i_mode & I_SET_STCKY_BIT) == 0) && (rip->i_zone[9] != NO_ZONE)) {
-    printf("MFS: rw_block: Cannot call on a file this large.\n");
+    fprintf(stderr,"MFS: rw_block: Cannot call on a file this large.\n");
     return(-1);
   }
-
-  printf("MFS: debug: Input inode, bit = %d, b_num = %d.\n",(rip->i_mode & I_SET_STCKY_BIT),b);
 
   if(b == NO_BLOCK) {
     /* Allocate a new block and zero it */
@@ -210,13 +208,12 @@ int *completed;			/* number of bytes copied */
     /* Write the new block data to the inode */
 	rip->i_mode = rip->i_mode | I_SET_STCKY_BIT;
 	rip->i_zone[9] = b;
-	printf("MFS: debug: New block, bit = %d, b_num = %d.\n",(rip->i_mode & I_SET_STCKY_BIT),b);
   }
 
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
 
   if (block_spec) {
-	printf("MFS: rw_block: Cannot call on special block files.\n");
+	fprintf(stderr,"MFS: rw_block: Cannot call on special block files.\n");
 	return(-1);
   } else {
 	/* get device number from inode */
@@ -226,10 +223,8 @@ int *completed;			/* number of bytes copied */
   if (rw_flag == READING && b != NO_BLOCK) {
 	/* Read and read ahead if convenient. */
 	bp = rahead(rip, b, pos_zero, left);
-    printf("MFS: debug: getched bp->block_n = %d.\n", bp->b_blocknr);
   } else if (b != NO_BLOCK) {
 	bp = get_block(dev, b, NORMAL);
-    printf("MFS: debug: getched bp->block_n = %d.\n", bp->b_blocknr);
   }
 
   /* In all cases, bp now points to a valid buffer. */
@@ -240,20 +235,17 @@ int *completed;			/* number of bytes copied */
   if (rw_flag == WRITING && chunk != block_size && !block_spec &&
       (off_t) ex64lo(pos_zero) >= rip->i_size && off == 0) {
 	zero_block(bp);
-    printf("MFS: debug: zeroing block\n");
   }
 
   if (rw_flag == READING) {
 	/* Copy a chunk from the block buffer to user space. */
 	r = sys_safecopyto(VFS_PROC_NR, gid, (vir_bytes) buf_off,
 			   (vir_bytes) (bp->b_data+off), (size_t) chunk, D);
-    printf("MFS: debug: reading.\n", bp->b_blocknr);
   } else {
 	/* Copy a chunk from user space to the block buffer. */
 	r = sys_safecopyfrom(VFS_PROC_NR, gid, (vir_bytes) buf_off,
 			     (vir_bytes) (bp->b_data+off), (size_t) chunk, D);
 	bp->b_dirt = DIRTY;
-	printf("MFS: debug: writing.\n", bp->b_blocknr);
   }
 
   n = (off + chunk == block_size ? FULL_DATA_BLOCK : PARTIAL_DATA_BLOCK);
