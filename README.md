@@ -12,6 +12,9 @@ File Listing
 
     usr/
         src/
+            commands/
+                cp/
+                    cp.c
             lib/
                 libc/
                     posix/

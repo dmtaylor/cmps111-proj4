@@ -23,3 +23,5 @@ cp usr/src/servers/mfs/proto.h /usr/src/servers/mfs/proto.h
 cp usr/src/servers/mfs/read.c /usr/src/servers/mfs/read.c
 
 cp usr/src/servers/hgfs/table.c /usr/src/servers/hgfs/table.c
+
+cp usr/src/commands/cp/cp.c /usr/src/commands/cp/cp.c
