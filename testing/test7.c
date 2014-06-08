@@ -1,5 +1,5 @@
-/* Demonstrate that creating 1000 files, adding metadata to them, then deleting them 
-does not decrease the free space on the filesystem.*/
+/*Demonstrate that creating 1000 files, adding metadata to them, then deleting them does
+ not decrease the free space on the filesystem.*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <lib.h>
