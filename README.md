@@ -1,5 +1,8 @@
 Project 4: Modifications to the MINIX filesystem
 ================================================
+Everyone participated fairly in this project. 
+We agreed to use all our grace days for this project. 
+None of us have used a single grace day so far.
 
 By: Forrest Kerslager
     Nick Noto
@@ -83,7 +86,14 @@ This assumes your system runs bash-2.05
     cd /usr/tools/
     make install
     
-restart your system
+Restart your system
+
+To run a test file in /testing/
+Run
+	
+	cc -c test.c
+	cc -o test test.o
+	./test
 
 Implementation Details
 ----------------------
@@ -97,7 +107,6 @@ Production Notes
 
 Bugs
 ----
-
-#TODO
+Sometimes install.sh will copy a file with a ? appended to the end of the filename. This happens when windows endlines using \r exist in install.sh.
 
 
