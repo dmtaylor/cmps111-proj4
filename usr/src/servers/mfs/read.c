@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 #include "fs.h"
 #include <stddef.h>
 #include <string.h>
@@ -28,7 +30,7 @@ PRIVATE char getdents_buf[GETDENTS_BUFSIZ];
 PRIVATE off_t rdahedpos;         /* position to read ahead */
 PRIVATE struct inode *rdahed_inode;      /* pointer to inode to read ahead */
 
-
+/* BEGIN CHANGE */
 /*===========================================================================*
  *				fs_metaread				     *
  *===========================================================================*/
@@ -54,18 +56,19 @@ PUBLIC int fs_metaread(void)
   regular = (mode_word == I_REGULAR || mode_word == I_NAMED_PIPE);
   block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0);
 
-  /* Determine blocksize */
+  /* Only process regular files */
   if (block_spec) {
-	/* warn and exit? */
-  } else {
-  	block_size = rip->i_sp->s_block_size;
-  	f_size = 1024;
+	fprintf(stderr,"MFS: warning: Cannot run on block special file.\n");
+	return(0);
   }
+
+  /* Determine blocksize */
+  block_size = rip->i_sp->s_block_size;
+  f_size = 1024;
 
   /* Get the values from the request message */ 
   gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
   nrbytes = (size_t) fs_m_in.REQ_NBYTES;
-	
   rdwt_err = OK;		/* set to EIO if disk error occurs */
   cum_io = 0;
 
@@ -73,13 +76,8 @@ PUBLIC int fs_metaread(void)
   r = rw_block(rip, rip->i_zone[9], 0, nrbytes,
 		   nrbytes, READING, gid, cum_io, block_size, &completed);
 
-  /*
-  if (r != OK) break; EOF reached 
-  if (rdwt_err < 0) break;
-
   if (rdwt_err != OK) r = rdwt_err;
   if (rdwt_err == END_OF_FILE) r = OK;
-  */
 
   if (r == OK) {
 	  rip->i_update |= ATIME;
@@ -118,13 +116,16 @@ PUBLIC int fs_metawrite(void)
   regular = (mode_word == I_REGULAR || mode_word == I_NAMED_PIPE);
   block_spec = (mode_word == I_BLOCK_SPECIAL ? 1 : 0);
 
-  /* Determine blocksize */
+  /* Only process regular files */
   if (block_spec) {
-	/* warn and exit? */
-  } else {
-  	block_size = rip->i_sp->s_block_size;
-  	f_size = 1024;
+	fprintf(stderr,"MFS: warning: Cannot run on block special file.\n");
+	return(-1);
   }
+
+  /* Determine blocksize */
+  block_size = rip->i_sp->s_block_size;
+  f_size = 1024;
+
 
   /* Get the values from the request message */ 
   gid = (cp_grant_id_t) fs_m_in.REQ_GRANT;
@@ -133,20 +134,12 @@ PUBLIC int fs_metawrite(void)
   rdwt_err = OK;		/* set to EIO if disk error occurs */
   cum_io = 0;
 
-  /* Clear zone?? */
-  /* clear_zone(rip, f_size, 0); */
-
   /* Read 'chunk' bytes. */
   r = rw_block(rip, rip->i_zone[9], 0, nrbytes,
 		   nrbytes, WRITING, gid, cum_io, block_size, &completed);
 
-  /*
-  if (r != OK) break; EOF reached 
-  if (rdwt_err < 0) break;
-
   if (rdwt_err != OK) r = rdwt_err;
   if (rdwt_err == END_OF_FILE) r = OK;
-  */
 
   if (r == OK) {
 	  rip->i_update |= ATIME;
@@ -187,13 +180,13 @@ int *completed;			/* number of bytes copied */
   pos_zero.lo = 0;
   pos_zero.hi = 0;
 
+  /* Do not run on directories or large files */
   if(((rip->i_mode & I_SET_STCKY_BIT) != 0) && (rip->i_zone[9] == NO_ZONE)) {
-    fprintf(stderr,"MFS: rw_block: Cannot call on directory.\n");
+    printf("MFS: rw_block: Cannot call on directory.\n");
     return(-1);
   }
-
   if(((rip->i_mode & I_SET_STCKY_BIT) == 0) && (rip->i_zone[9] != NO_ZONE)) {
-    fprintf(stderr,"MFS: rw_block: Cannot call on a file this large.\n");
+    printf("MFS: rw_block: Cannot call on a file this large.\n");
     return(-1);
   }
 
@@ -213,7 +206,7 @@ int *completed;			/* number of bytes copied */
   block_spec = (rip->i_mode & I_TYPE) == I_BLOCK_SPECIAL;
 
   if (block_spec) {
-	fprintf(stderr,"MFS: rw_block: Cannot call on special block files.\n");
+	printf("MFS: rw_block: Cannot call on special block files.\n");
 	return(-1);
   } else {
 	/* get device number from inode */
@@ -231,7 +224,7 @@ int *completed;			/* number of bytes copied */
   if (bp == NULL) 
   	panic("bp not valid in rw_chunk; this can't happen");
   
-   /* remove chunk != block_size ?? */
+   /* zero buffer if new writing block */
   if (rw_flag == WRITING && chunk != block_size && !block_spec &&
       (off_t) ex64lo(pos_zero) >= rip->i_size && off == 0) {
 	zero_block(bp);
@@ -248,12 +241,13 @@ int *completed;			/* number of bytes copied */
 	bp->b_dirt = DIRTY;
   }
 
+  /* Return block from IO */
   n = (off + chunk == block_size ? FULL_DATA_BLOCK : PARTIAL_DATA_BLOCK);
   put_block(bp, n);
 
   return(r);
 }
-
+/* END CHANGE */
 
 /*===========================================================================*
  *				fs_readwrite				     *

@@ -1,3 +1,4 @@
+# MODIFIED
 # posix sources
 .PATH: ${.CURDIR}/posix
 

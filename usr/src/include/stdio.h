@@ -1,3 +1,4 @@
+/* MODIFIED */
 /*
  * stdio.h - input/output definitions
  *
@@ -74,8 +75,10 @@ typedef unsigned int	size_t;		/* type returned by sizeof */
 extern FILE	*__iotab[FOPEN_MAX];
 extern FILE	__stdin, __stdout, __stderr;
 
+/* BEGIN CHANGE */
 _PROTOTYPE( ssize_t metaread, (int _fd, void *_buf, size_t _n)				);
 _PROTOTYPE( ssize_t metawrite, (int _fd, void *_buf, size_t _n)				);
+/* END CHANGE */
 _PROTOTYPE( int remove, (const char *_filename)				);
 _PROTOTYPE( int rename, (const char *_old, const char *_new)		);
 _PROTOTYPE( FILE *tmpfile, (void)					);

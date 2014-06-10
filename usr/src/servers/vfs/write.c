@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 /* This file is the counterpart of "read.c".  It contains the code for writing
  * insofar as this is not contained in read_write().
  *
@@ -19,6 +21,8 @@ PUBLIC int do_write()
   return(read_write(WRITING));
 }
 
+/* BEGIN CHANGE */
+
 /*===========================================================================*
  *				do_metawrite					     *
  *===========================================================================*/
@@ -27,3 +31,4 @@ PUBLIC int do_metawrite()
   return(meta_read_write(WRITING));
 }
 
+/* END CHANGE */

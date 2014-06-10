@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 #define NCALLS		 113	/* number of system calls allowed */
 
 #define EXIT		   1 
@@ -58,8 +60,10 @@
 #define SETGROUPS	  66
 #define GETMCONTEXT       67
 #define SETMCONTEXT       68
+/* BEGIN CHANGE */
 #define METAREAD          69
 #define METAWRITE          70
+/* END CHANGE */
 
 /* Posix signal handling. */
 #define SIGACTION	  71

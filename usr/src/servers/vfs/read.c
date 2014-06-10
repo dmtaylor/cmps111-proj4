@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 /* This file contains the heart of the mechanism used to read (and write)
  * files.  Read and write requests are split up into chunks that do not cross
  * block boundaries.  Each chunk is then processed in turn.  Reads on special
@@ -33,7 +35,7 @@ PUBLIC int do_read()
   return(read_write(READING));
 }
 
-
+/* BEGIN CHANGE */
 /*===========================================================================*
  *				do_metaread					     *
  *===========================================================================*/
@@ -60,6 +62,7 @@ int rw_flag;			/* READING or WRITING */
 	if (((f->filp_mode) & (rw_flag == READING ? R_BIT : W_BIT)) == 0) {
 		return(f->filp_mode == FILP_CLOSED ? EIO : EBADF);
 	}
+	/* Do not process an empty request */
 	if (m_in.nbytes == 0) return(0);
 
 	vp = f->filp_vno;
@@ -77,7 +80,7 @@ int rw_flag;			/* READING or WRITING */
 	if (r == OK) return(cum_io);
 	return(r);
 }
-
+/* BEGIN END */
 
 /*===========================================================================*
  *				read_write				     *

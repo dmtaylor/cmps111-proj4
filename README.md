@@ -92,18 +92,24 @@ Run
 	cc -o test test.o
 	./test
 
+Repeat the above compilation steps to build the user utilities metacat.c and metatag.c in /utils
+
 Implementation Details
 ----------------------
+Prototypes for the user library calls 
+	ssize_t metaread(int _fd, void *_buf, size_t _n)
+	ssize_t metawrite(int _fd, void *_buf, size_t _n)
+are included in stdio.h.
+These calls function in the same way as the standard read() and write().
 
-#TODO
-
-Production Notes
-----------------
-
-#TODO
+The utils provided in /utils are 
+	metacat filename
+and 
+	metaread filename text to append to metadata
 
 Bugs
 ----
 Sometimes install.sh will copy a file with a ? appended to the end of the filename. This happens when windows endlines using \r exist in install.sh.
+If compilation fails it might be due to windows endline present in install.sh or Makefile.inc.
 
 

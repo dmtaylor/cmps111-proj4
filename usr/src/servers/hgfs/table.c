@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 /* This file contains the file system call table.
  *
  * Created:
@@ -41,8 +43,10 @@ PUBLIC _PROTOTYPE( int (*call_vec[]), (void) ) = {
 	no_sys,		/* 30 rdlink		*/
 	do_getdents,	/* 31 getdents		*/
 	do_statvfs,	/* 32 statvfs		*/
+/* BEGIN CHANGE */
 	no_sys,	/* 33 metaread */
 	no_sys,	/* 34 metawrite */
+/* END CHANGE */
 };
 
 /* This should not fail with "array size is negative": */

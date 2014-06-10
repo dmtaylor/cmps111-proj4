@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 /* Function prototypes. */
 
 #include "timers.h"
@@ -180,9 +182,11 @@ _PROTOTYPE( int rw_pipe, (int rw_flag, endpoint_t usr,
 		int fd_nr, struct filp *f, char *buf, size_t req_size)	);
 
 /* request.c */
+/* BEGIN CHANGE */
 _PROTOTYPE( int req_meta, (endpoint_t fs_e, ino_t inode_nr, int rw_flag,
 				endpoint_t user_e, char *user_addr,
 				unsigned int num_of_bytes, unsigned int *cum_iop)					); 
+/* BEGIN END */
 _PROTOTYPE( int req_breadwrite, (endpoint_t fs_e, endpoint_t user_e,
 			dev_t dev, u64_t pos, unsigned int num_of_bytes,
 			char *user_addr, int rw_flag,
@@ -289,7 +293,9 @@ _PROTOTYPE( int check_vrefs, (void)			);
 
 /* write.c */
 _PROTOTYPE( int do_write, (void)					);
+/* BEGIN CHANGE */
 _PROTOTYPE( int do_metawrite, (void)						);
+/* END CHANGE */
 
 /* gcov.c */
 _PROTOTYPE( int do_gcov_flush, (void)					);

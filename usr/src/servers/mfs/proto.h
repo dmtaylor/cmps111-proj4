@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 #ifndef __MFS_PROTO_H__
 #define __MFS_PROTO_H__
 
@@ -82,8 +84,10 @@ _PROTOTYPE( int forbidden, (struct inode *rip, mode_t access_desired)	);
 _PROTOTYPE( int read_only, (struct inode *ip)				);
 
 /* read.c */
+/* BEGIN CHANGE */
 _PROTOTYPE( int fs_metaread, (void)					);
 _PROTOTYPE( int fs_metawrite, (void)					);
+/* END CHANGE */
 _PROTOTYPE( int fs_breadwrite, (void)					);
 _PROTOTYPE( int fs_readwrite, (void)					);
 _PROTOTYPE( void read_ahead, (void)					);

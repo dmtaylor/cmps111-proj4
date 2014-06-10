@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 /* This file contains the wrapper functions for issueing a request
  * and receiving response from FS processes.
  * Each function builds a request message according to the request
@@ -29,7 +31,7 @@ FORWARD _PROTOTYPE(int fs_sendrec_f, (char *file, int line, endpoint_t fs_e,
 
 #define fs_sendrec(e, m) fs_sendrec_f(__FILE__, __LINE__, (e), (m))
 
-
+/* BEGIN CHANGE */
 /*===========================================================================*
  *				req_meta				     *
  *===========================================================================*/
@@ -47,6 +49,7 @@ unsigned int *cum_iop;
   cp_grant_id_t grant_id;
   message m;
 
+  /* Get grant to write between buffers */
   grant_id = cpf_grant_magic(fs_e, user_e, (vir_bytes) user_addr, num_of_bytes,
   			     (rw_flag==READING ? CPF_WRITE:CPF_READ));
   if (grant_id == -1)
@@ -62,14 +65,14 @@ unsigned int *cum_iop;
   r = fs_sendrec(fs_e, &m);
   cpf_revoke(grant_id);
 
+  /* Fill in response structure */
   if (r == OK) {
-	/* Fill in response structure */
 	*cum_iop = m.RES_NBYTES;
   }
   
   return(r);
 }
-
+/* END CHANGE */
 
 /*===========================================================================*
  *			req_breadwrite					     *

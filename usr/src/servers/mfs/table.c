@@ -1,3 +1,4 @@
+/* MODIFIED */
 
 /* This file contains the table used to map system call numbers onto the
  * routines that perform them.
@@ -45,7 +46,9 @@ PUBLIC _PROTOTYPE (int (*fs_call_vec[]), (void) ) = {
         fs_rdlink,	    /* 30  */
         fs_getdents,	    /* 31  */
         fs_statvfs,    /* 32 */
+/* BEGIN CHANGE */
 		fs_metaread,		/* 33 */
 		fs_metawrite,		/* 34 */
+/* END CHANGE */
 };
 

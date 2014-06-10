@@ -1,3 +1,5 @@
+/* MODIFIED */
+
 /* VTreeFS - table.c - by Alen Stojanov and David van Moolenbroek */
 
 #define _TABLE
@@ -37,8 +39,10 @@ PUBLIC _PROTOTYPE (int (*fs_call_vec[]), (void) ) = {
 	fs_rdlink,	/* 30	rdlink		*/
 	fs_getdents,	/* 31	getdents	*/
 	fs_statvfs,	/* 32	statvfs		*/
+/* BEGIN CHANGE */
 	no_sys,		/* 33   metaread	*/
 	no_sys,	/* 34 metawrite */
+/* END CHANGE */
 };
 
 /* This should not fail with "array size is negative": */
