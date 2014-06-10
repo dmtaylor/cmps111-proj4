@@ -4,11 +4,11 @@ Everyone participated fairly in this project.
 We agreed to use all our grace days for this project. 
 None of us have used a single grace day so far.
 
-By: Forrest Kerslager
-    Nick Noto
-    David Taylor
-    Kevin Yeap
-    Connie Yu
+By: Forrest Kerslager   
+    Nick Noto   
+    David Taylor   
+    Kevin Yeap   
+    Connie Yu   
 
 File Listing
 ------------
@@ -96,20 +96,26 @@ Repeat the above compilation steps to build the user utilities metacat.c and met
 
 Implementation Details
 ----------------------
-Prototypes for the user library calls 
+Prototypes for the user library calls
+
 	ssize_t metaread(int _fd, void *_buf, size_t _n)
 	ssize_t metawrite(int _fd, void *_buf, size_t _n)
+    
 are included in stdio.h.
 These calls function in the same way as the standard read() and write().
 
-The utils provided in /utils are 
+The utils provided in /utils are
+
 	metacat filename
+    
 and 
+
 	metatag filename text to append to metadata
 
 Bugs
 ----
-Sometimes install.sh will copy a file with a ? appended to the end of the filename. This happens when windows endlines using \r exist in install.sh.
+Sometimes install.sh will copy a file with a ? appended to the end of the filename.
+This happens when windows endlines using \r exist in install.sh.
 If compilation fails it might be due to windows endline present in install.sh or Makefile.inc.
 
 
