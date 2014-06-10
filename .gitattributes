@@ -6,5 +6,6 @@
 Makefile text elo=lf
 *.inc text elo=lf
 *.sh text elo=lf
+*.md text elo=lf
 
 *.pdf binary
