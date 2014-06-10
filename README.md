@@ -105,7 +105,7 @@ These calls function in the same way as the standard read() and write().
 The utils provided in /utils are 
 	metacat filename
 and 
-	metaread filename text to append to metadata
+	metatag filename text to append to metadata
 
 Bugs
 ----
